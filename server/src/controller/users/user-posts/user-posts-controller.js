@@ -72,7 +72,8 @@ const deleteuserPost = async(req,res) => {
         // console.log(predata)
         if(predata){
 
-            const  filePath = path.join('D:','ws-cube','react','Next_Js','Blogging_Website','server','src','uploads','user-posts');
+            // const  filePath = path.join('D:','ws-cube','react','Next_Js','Blogging_Website','server','src','uploads','user-posts');
+            const  filePath = path.resolve(__dirname, '../../../uploads/user-posts');
     
             
             if(predata.thumbnail){

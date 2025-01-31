@@ -44,8 +44,9 @@ const deletePost = async(req,res) => {
         // console.log(predata)
         if(predata){
 
-            const  filePath = path.join('D:','ws-cube','react','Next_Js','Blogging_Website','server','src','uploads','admin-posts');
-    
+            // const  filePath = path.join('D:','ws-cube','react','Next_Js','Blogging_Website','server','src','uploads','admin-posts');
+            // const filePath = './../../uploads/admin-posts'
+            const  filePath = path.resolve(__dirname, '../../../uploads/admin-posts');
             
             if(predata.admin_post){
                 // data.admin_post = req.files.admin_post[0].filename
@@ -121,7 +122,8 @@ const updatePost = async(req,res)=>{
 
     if(req.files){
 
-    const  filePath = path.join('D:','ws-cube','react','Next_Js','BLOGGING_WEBSITE','backend','src','uploads','admin-posts');
+    // const  filePath = path.join('D:','ws-cube','react','Next_Js','BLOGGING_WEBSITE','backend','src','uploads','admin-posts');
+    const  filePath = path.resolve(__dirname, '../../../uploads/admin-posts');
 
     // console.log(filePath)
 

@@ -90,12 +90,13 @@ const loginUser = async (req, res) => {
     try {
         const ifValidEmail = await User.find({ email: req.body.email });
         // console.log(ifValidEmail[0]._id)
-        const _id = ifValidEmail[0]._id;
+        const id = ifValidEmail[0]._id;
 
         if (ifValidEmail.length === 0) return res.status(400).json({ message: 'invalid User email ' });
 
-        const response = await User.updateOne({_id,
-            $set:{status:true}
+        const response = await User.updateOne({
+            id,
+            $set: { status: true }
         })
 
         const { password, ...responseWithoutPassword } = ifValidEmail[0];
@@ -112,12 +113,12 @@ const loginUser = async (req, res) => {
                 if (error) return res.status(203).json({ message: 'somethin went in jwt wrong' });
 
                 console.log(error)
-                
-                res.status(200).json({ message: 'User logged in', data: withoutPassword,file_path });
 
-                
+                res.status(200).json({ message: 'User logged in', data: withoutPassword, file_path });
+
+
             })
-            
+
 
         });
 
@@ -128,66 +129,66 @@ const loginUser = async (req, res) => {
     }
 }
 
-const viewUser = async(req,res) =>{
-    try{
+const viewUser = async (req, res) => {
+    try {
         const response = await User.find()
         // .populate('userrs')
         const file_path = `${req.protocol}://${req.get('host')}/keshaveBlog-files/users/`;
-        res.status(200).json({message:'Fetched',data:response,file_path})
+        res.status(200).json({ message: 'Fetched', data: response, file_path })
     }
-    catch(error){
+    catch (error) {
         console.log(error);
     }
 }
 
-const genrateOtpUser = async(req, res)=>{
-    try{
+const genrateOtpUser = async (req, res) => {
+    try {
         const { email } = req.body;
         console.log(email);
 
-       const transporter = nodemailer.createTransport({
-        service:'gmail',
-        auth:{
-            user: process.env.ADMIN_MAIL,
-            pass: process.env.ADMIN_APP_PASSWORD
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.ADMIN_MAIL,
+                pass: process.env.ADMIN_APP_PASSWORD
+            }
+        });
+
+        const otp = Math.floor(Math.random() * 1000000);
+
+
+        const otpDataMap = otpData;
+        otpDataMap.set(email, otp);
+
+
+        const mailOptions = {
+            from: 'noreply@mail.com',
+            to: email,
+            subject: 'Otp for email update',
+            text: `Your otp is ${otp}`
         }
-       });
 
-       const otp = Math.floor(Math.random() * 1000000);
+        transporter.sendMail(mailOptions, (error, success) => {
+            if (error) return res.status(500).json({ message: 'otp could not genrate', error })
 
-
-       const otpDataMap = otpData;
-          otpDataMap.set(email, otp);
-    
-
-       const mailOptions = {
-        from: 'noreply@mail.com',
-        to: email,
-        subject:'Otp for email update',
-        text: `Your otp is ${otp}`
-       }
-
-       transporter.sendMail(mailOptions,(error, success)=>{
-        if(error) return res.status(500).json({message: 'otp could not genrate',error})
-
-            res.status(200).json({message:'otp has sent'});
-       })
+            res.status(200).json({ message: 'otp has sent' });
+        })
     }
-    catch(error){
+    catch (error) {
         console.log(error);
-        res.status(500).json({message: 'internal server error'});
+        res.status(500).json({ message: 'internal server error' });
     }
 };
 
-const updatePassword = async(req,res)=>{
+const updatePassword = async (req, res) => {
     try {
 
         const otpDataMap = otpData;
         const sentOtp = otpDataMap.get(req.body.email);
 
-        if(Number(req.body.userotp )!== (sentOtp)) return res.status(401).json({message:'please enter a valid otp'});
+        if (Number(req.body.userotp) !== (sentOtp)) return res.status(401).json({ message: 'please enter a valid otp' });
 
-       
+
 
         // res.status(200).json({message:'email has updated', data: response});
 
@@ -203,9 +204,9 @@ const updatePassword = async(req,res)=>{
 
             // const response = await dataToSave.save();
             const response = await User.updateOne(
-                {email:req.body.email},
+                { email: req.body.email },
                 {
-                    $set:{password:data.password}
+                    $set: { password: data.password }
                 }
 
             );
@@ -227,7 +228,7 @@ const updatePassword = async(req,res)=>{
                 subject: 'Welcome to Frank and Oak',
                 html: `<div style="text-align: center;">
                       <h1 >Welcome to Frank and Oak </h1>
-                        <h2 >${ req.body.email}</h2>
+                        <h2 >${req.body.email}</h2>
                         <div >
                             <img class="" src='https://i.pinimg.com/originals/bc/9e/4a/bc9e4a15c3b226b8914e57e543defe9e.png' width='150px' height='150px'/>
                         </div>
@@ -243,7 +244,7 @@ const updatePassword = async(req,res)=>{
 
                 res.status(200).json({ message: 'Registerd Successfully', data: response });
             })
-           
+
             // console.log(responseWithoutPassword);
 
 
@@ -259,13 +260,13 @@ const updatePassword = async(req,res)=>{
         // res.status(200).json({message:"success"})
 
     }
-    catch(error){
+    catch (error) {
         console.log(error);
-        res.status(500).json({message: 'internal server error'});
+        res.status(500).json({ message: 'internal server error' });
     }
 }
 
-const updateUser = async(req,res)=>{
+const updateUser = async (req, res) => {
 
     const data = req.body;
     // console.log("idsss",req.params)
@@ -273,12 +274,13 @@ const updateUser = async(req,res)=>{
     const predata = await User.findById(req.params);
 
 
-    if(req.files){
-        const  filePath = path.join('D:','ws-cube','react','Next_Js','backend','src','uploads','users');
+    if (req.files) {
+        // const  filePath = path.join('D:','ws-cube','react','Next_Js','backend','src','uploads','users');
+        const filePath = path.resolve(__dirname, '../../../uploads/users');
 
-        if(req.files.profile){
+        if (req.files.profile) {
             data.profile = req.files.profile[0].filename
-            if(fs.existsSync(`${filePath}/${predata.profile}`)){
+            if (fs.existsSync(`${filePath}/${predata.profile}`)) {
                 fs.unlinkSync(`${filePath}/${predata.profile}`)
             }
         }
@@ -286,66 +288,85 @@ const updateUser = async(req,res)=>{
 
     // console.log(data);
 
-    try{
+    try {
         const response = await User.updateOne(
             req.params,
             {
-                $set:data
+                $set: data
             }
         )
 
         const file_path = `${req.protocol}://${req.get('host')}/keshaveBlog-files/users`;
 
-        res.status(200).json({ message: 'data updated successfully', data:response,file_path});
+        res.status(200).json({ message: 'data updated successfully', data: response, file_path });
         // console.log(file_path)
     }
-    catch(error){
+    catch (error) {
         console.log(error);
-        res.status(500).json({message: 'internal server error'});
+        res.status(500).json({ message: 'internal server error' });
     }
 };
 
-const deleteuser = async(req,res) => {
-    try{
+const deleteuser = async (req, res) => {
+    try {
         const predata = await User.findById(req.params);
-        // console.log(req.params)
-        if(predata){
+        const predata1 = await UserPost.find({ userr: req.params }).populate('userr');
+        console.log(predata1)
+        if (predata) {
 
-            const  filePath = path.join('D:','ws-cube','react','Next_Js','Blogging_Website','server','src','uploads','users');
-    
+            // const  filePath = path.join('D:','ws-cube','react','Next_Js','Blogging_Website','server','src','uploads','users');
+            const filePath = path.resolve(__dirname, '../../../uploads/users');
             
-            if(predata.profile){
+
+            if (predata.profile) {
                 // data.thumbnail = req.files.thumbnail[0].filename
-                if(fs.existsSync(`${filePath}/${predata.profile}`)){
+                if (fs.existsSync(`${filePath}/${predata.profile}`)) {
                     fs.unlinkSync(`${filePath}/${predata.profile}`)
                 }
             }
         }
-    
+        if (predata1) {
+            const filePath1 = path.resolve(__dirname, '../../../uploads/user-posts');
+            predata1.forEach((item) => {
+                if (item.thumbnail) {
+                    if (fs.existsSync(`${filePath1}/${item.thumbnail}`)) {
+                        fs.unlinkSync(`${filePath1}/${item.thumbnail}`)
+                    }
+                }
+            })
+
+            // if (predata1.thumbnail) {
+            //     // data.thumbnail = req.files.thumbnail[0].filename
+            //     if (fs.existsSync(`${filePath1}/${predata1.thumbnail}`)) {
+            //         fs.unlinkSync(`${filePath1}/${predata1.thumbnail}`)
+            //     }
+            // }
+        }
+
         const response = await User.deleteOne(req.params);
-        if(response){
-            await UserPost.deleteMany({ userr : req.params });
-            await UserComment.deleteMany({userrs : req.params});
+        if (response) {
+            await UserPost.deleteMany({ userr: req.params });
+            await UserComment.deleteMany({ userrs: req.params });
             console.log('User and their posts deleted successfully');
         }
-        res.status(200).json({message:'Deleted',data:response})
-    
+        res.status(200).json({ message: 'Deleted', data: response })
+
     }
-    catch(error){
+    catch (error) {
         console.log(error);
     }
 }
 
-const statusupdateuser = async(req,res) => {
-    try{
+const statusupdateuser = async (req, res) => {
+    try {
 
         // console.log(req.body.newvalues,req.params)
-        const response = await User.updateOne(req.params,{
-            $set:{status:req.body.newvalues}
+        const response = await User.updateOne(req.params, {
+            $set: { status: req.body.newvalues }
         })
-        res.status(200).json({message:"Status Updated",data:response})
+        res.status(200).json({ message: "Status Updated", data: response })
     }
-    catch(error){
+    catch (error) {
         console.log(error);
     }
 }

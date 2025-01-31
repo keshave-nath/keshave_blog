@@ -19,7 +19,7 @@ const page = () => {
     const [pat,setpat]=useState([])
     const [fetchpost, setfetchpost] = useState([])
     const [prof,setprof] = useState([])
-    const [del,setdel] =useState(false)
+    
 
     let cookieData = Cookies.get('Blogging_User')
     if (cookieData) {
@@ -67,39 +67,7 @@ const page = () => {
         }
     }
 
-    const handelDelete = ()=>{
-        setdel(!del);
-    }
-
-    const deletePost = async (e) => {
-        try {
-            const response = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/blogging-services/user-posts/delete-user-post/${e}`)
-            if (response.status == 200) {
-
-                Swal.fire({
-                    title:"Success ",
-                    text:"Post Deleted Successfully !",
-                    icon:"success",
-                })
-
-                const indexNo = fetchpost.findIndex((v) => v._id === e);
-                const newData = [...fetchpost]
-                newData.splice(indexNo, 1);
-
-                setfetchpost(newData);
-
-
-            }
-        }
-        catch (error) {
-            console.log(error);
-            Swal.fire({
-                title:"Oops ",
-                text:"Internal Server Error Try After Sometime !",
-                icon:"error",
-            })
-        }
-    }
+    
 
     useEffect(() => { fetchuserPost(); handelProfile(); }, [])
     // console.log("Keshave"+cookieData)
@@ -172,14 +140,7 @@ const page = () => {
 
                                     </div>
                                 </Link>
-                                <div className='position-absolute top-0 end-0' >
-                                     <BsThreeDotsVertical className=' fs-3' onClick={handelDelete} />
-                                     <div className='position-absolute ms-1 fw-bold '>
-                                        <div className={del==false ?'d-none':'d-flex p-1 border border-2 rounded bg-black'} style={{cursor:'pointer'}} onClick={()=>(deletePost(v._id))} >
-                                            <MdDeleteForever className='fs-4 text-danger' /> <p>Delete</p>
-                                        </div>
-                                     </div>
-                                </div>
+                                {/* <HandelDeletee v={v._id}/> */}
                             </div>
                         ))
                     }
@@ -193,5 +154,53 @@ const page = () => {
         </>
     )
 }
+
+// function HandelDeletee(v){
+//     // console.log(v);
+//     const [del,setdel] =useState(false)
+//     const handelDelete = ()=>{
+//         setdel(!del);
+//     }
+
+//     const deletePost = async (e) => {
+//         try {
+//             const response = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/blogging-services/user-posts/delete-user-post/${e}`)
+//             if (response.status == 200) {
+
+//                 Swal.fire({
+//                     title:"Success ",
+//                     text:"Post Deleted Successfully !",
+//                     icon:"success",
+//                 })
+
+//                 const indexNo = fetchpost.findIndex((v) => v._id === e);
+//                 const newData = [...fetchpost]
+//                 newData.splice(indexNo, 1);
+
+//                 setfetchpost(newData);
+
+
+//             }
+//         }
+//         catch (error) {
+//             console.log(error);
+//             Swal.fire({
+//                 title:"Oops ",
+//                 text:"Internal Server Error Try After Sometime !",
+//                 icon:"error",
+//             })
+//         }
+//     }
+//     return(
+//         <div className='position-absolute top-0 end-0' >
+//                                      <BsThreeDotsVertical className=' fs-3' onClick={handelDelete} />
+//                                      <div className='position-absolute ms-1 fw-bold '>
+//                                         <div className={del==false ?'d-none':'d-flex p-1 border border-2 rounded bg-black'} style={{cursor:'pointer'}} onClick={()=>(deletePost(v.v))} >
+//                                             <MdDeleteForever className='fs-4 text-danger' /> <p>Delete</p>
+//                                         </div>
+//                                      </div>
+//                                 </div>
+//     )
+// }
 
 export default page

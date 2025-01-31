@@ -34,6 +34,13 @@ const Header = () => {
 
   let { user, setUser } = useContext(ContextAPI)
 
+  const handlelogout = () => {
+    Cookies.remove("Blogging_User")
+
+    //  setView(false)
+    nav.push("/")
+  }
+
   const checkedifloggedin = () => {
 
     let cookiedata = Cookies.get("Blogging_User")
@@ -87,6 +94,7 @@ const Header = () => {
 
   const Handelaccountdelete = async () => {
     try {
+      if (window.confirm("Are you Sure You Want to Disable Your Account?")) {
       const response = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/blogging-services/user/delete-account/${user._id}`);
       if (response.status == 200) {
         Swal.fire({
@@ -104,6 +112,7 @@ const Header = () => {
           icon: 'error'
         })
       }
+    }
 
     }
     catch (error) {
@@ -137,12 +146,7 @@ const Header = () => {
 //     }
 // }
 
-  const handlelogout = () => {
-    Cookies.remove("Blogging_User")
-
-    //  setView(false)
-    nav.push("/")
-  }
+  
 
   useEffect(() => { checkedifloggedin(); }, [])
   //  console.log(user._id)
@@ -166,7 +170,7 @@ const Header = () => {
                 <IoPersonSharp className='text-white fs-5' /><p>Profile</p>
               </NavDropdown.Item>
               <NavDropdown.Item href="/website/EditProfile" className='d-flex gap-2'>
-                <FaRegEdit className='fs-5 text-white' /><p>Edit</p>
+                <FaRegEdit className='fs-5 text-white' /><p>Edit Profile</p>
               </NavDropdown.Item>
               <NavDropdown.Item href="/website/TermsAndConditions" className='d-flex gap-2'>
                 <GiNotebook className='fs-5 text-white' /><p>Terms & Conditions</p>

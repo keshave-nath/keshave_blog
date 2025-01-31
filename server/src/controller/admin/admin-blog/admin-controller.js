@@ -104,18 +104,22 @@ const updateEmail = async(req,res)=>{
 const updateAdmin = async(req,res)=>{
 
     const data = req.body;
-    // console.log(req.body,req.params)
+    // console.log(req.body)
 
     const predata = await Admin.findById(req.params._id);
-
+    // console.log(predata)
     if(req.files){
 
         // const  filePath = path.join('D:','ws-cube','react','Next_Js','Blogging_Website','server','src','uploads','admin');
-        const filePath = './../../uploads/admin'
-        
-        if(req.files.profile){
+        const  filePath = path.resolve(__dirname, '../../../uploads/admin');
+        // const filePath = './../../../uploads/admin';
+        console.log(filePath)
+        if(req.files.profile[0]){
+            // console.log(req.files.profile)
             data.profile = req.files.profile[0].filename
+            console.log(`${filePath}/${predata.profile}`)
             if(fs.existsSync(`${filePath}/${predata.profile}`)){
+                console.log("hello")
                 fs.unlinkSync(`${filePath}/${predata.profile}`)
             }
         }

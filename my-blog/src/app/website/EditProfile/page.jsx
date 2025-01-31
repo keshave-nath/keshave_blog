@@ -135,7 +135,7 @@ const handelOut = ()=>{
              <textarea name='bio' placeholder='Enter Your Trip Experience' maxLength={620} id="" className='d-block w-100 rounded border-0 my-3 p-1' ></textarea>  
  
              <button className='text-white butt border-0 w-100 p-1 rounded fw-bold fs-3 mt-5'>  
-               ADD Your Blog
+               Edit your Profile
              </button>
          </form>    
      </div>

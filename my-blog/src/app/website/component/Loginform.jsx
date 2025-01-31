@@ -46,23 +46,29 @@ const Loginform = () => {
 
     };
 
+    const handelloading=()=>{
+        setIsLoading(false)
+        SetLogin(false)
+    }
+
     const handleGenerateOtp = async () => {
         const ifValid = validateFormDate();
         if (ifValid) {
-
+            setIsLoading(true)
             try {
                 // alert("Keshave is best")
                 const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER}/api/blogging-services/user/register-user`, formData);
 
                 // // console.log(response)
 
-                if (response.status != 200) return (
+                if (response.status != 200) {
                     Swal.fire({
                         title: "Error",
                         text: "Something Went Wrong",
                         icon: "error"
                       })
-                )
+                      setIsLoading(false)
+                    }
 
                 if(response.status==200)return(
                     Swal.fire({
@@ -70,7 +76,8 @@ const Loginform = () => {
                         text:"User is being register successfully",
                         icon:"success"
                     }).then((res)=>(
-                        SetLogin(false)
+                        handelloading()
+                        
                     ))
                 )
                 // swal({
@@ -82,11 +89,13 @@ const Loginform = () => {
             }
             catch (error) {
                 console.log(error);
+                setIsLoading(false)
                 Swal.fire({
                     title: "Error",
                     text: "Network Error !",
                     icon: "error"
                   })
+
                 // swal({
                 //     title:"Something went wrong in server !!",
                 //     text:"Please try again",
@@ -100,7 +109,7 @@ const Loginform = () => {
             }, 5000);
         }
 
-
+        
 
     };
 
@@ -315,10 +324,17 @@ const Loginform = () => {
                             </div>
 
 
-
+                            {isLoading ? (
+                                    <div className="text-center">
+                                        <div className="spinner-border text-primary mt-2" role="status">
+                                            <span className="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                ) : (
                             <button type='button' onClick={handleGenerateOtp} className='w-100 py-2 my-5 border-0 butt bg-primary text-white rounded fw-bold text-center'>
                                 Sign-up
                             </button>
+                                )}
                         </form>
                         <p className='fw-bold text-secondary text-center'>Powered By AK</p>
                     </div>

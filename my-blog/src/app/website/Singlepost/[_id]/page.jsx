@@ -12,14 +12,18 @@ import Image from 'next/image'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Header from '../../component/Header'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import axios from 'axios'
 import { ContextAPI } from '@/app/context/Maincontext'
+import { MdDeleteForever } from 'react-icons/md'
+import { TbMessageReport } from 'react-icons/tb'
+import Swal from 'sweetalert2'
 
 
 const page = () => {
 
     const params = useParams();
+    const nav = useRouter();
     // console.log(params)
     const [report, setreport] = useState(false)
     const [like, setlike] = useState(false)
@@ -27,7 +31,7 @@ const page = () => {
     const [modalShow, setModalShow] = React.useState(false);
     const [fetchSingle, setfetchSingle] = useState([])
     const [pat, setpat] = useState([])
-    const [prof,setprof] = useState([])
+    const [prof, setprof] = useState([])
     // let prof = []
 
     const fetchuserPost = async () => {
@@ -47,6 +51,43 @@ const page = () => {
         }
         catch (error) {
             console.log(error)
+        }
+    }
+
+    const [del, setdel] = useState(false)
+    const handelDelete = () => {
+        setdel(!del);
+    }
+
+    const deletePost = async (e) => {
+        try {
+            const response = await axios.delete(`${process.env.NEXT_PUBLIC_SERVER}/api/blogging-services/user-posts/delete-user-post/${e}`)
+            if (response.status == 200) {
+
+                Swal.fire({
+                    title: "Success ",
+                    text: "Post Deleted Successfully !",
+                    icon: "success",
+                }).then((res)=>(
+                    nav.push('/website/Profile')
+                ))
+
+                // const indexNo = fetchpost.findIndex((v) => v._id === e);
+                // const newData = [...fetchpost]
+                // newData.splice(indexNo, 1);
+
+                // setfetchpost(newData);
+
+
+            }
+        }
+        catch (error) {
+            console.log(error);
+            Swal.fire({
+                title: "Oops ",
+                text: "Internal Server Error Try After Sometime !",
+                icon: "error",
+            })
         }
     }
 
@@ -73,14 +114,21 @@ const page = () => {
                             <h4 className='position-relative'>
                                 <BsThreeDotsVertical onClick={() => setreport(!report)} />
                                 <div className={`${report == true ? '' : 'd-none'} position-absolute end-0 border border-white rounded p-2`}
-                                style={{
-                                    cursor:'pointer'
-                                }}
+                                    style={{
+                                        cursor: 'pointer'
+                                    }}
                                 >
                                     {/* <h5>Delete Post</h5> */}
-                                    <h5>Report</h5>
+                                    <Link href={`/website/Reports/${fetchSingle._id}`} className='text-white d-flex gap-2' >
+                                        <TbMessageReport className="fs-4 text-white" />
+                                        <h5>Report</h5>
+                                    </Link>
 
+                                    <div className='d-flex p-1 ' style={{ cursor: 'pointer' }} onClick={() => (deletePost(fetchSingle._id))} >
+                                        <h5 className='d-flex'><MdDeleteForever className=' fs-4 text-danger' />Delete</h5>
+                                    </div>
                                 </div>
+
                             </h4>
                         </div>
                         <Link href={`/website/Detail/${prof._id}`}
@@ -173,8 +221,8 @@ function MyVerticallyCenteredModal(props) {
         };
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER}/api/blogging-services/user-comments/add-user-comments`, data);
-            if(response.status==200){
-                e.target.comment.value=" ";
+            if (response.status == 200) {
+                e.target.comment.value = " ";
             }
             // console.log(response.data.data)
         }
